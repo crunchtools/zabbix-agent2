@@ -1,0 +1,29 @@
+[Unit]
+Description=Zabbix Agent2 Container (quay.io/crunchtools/zabbix-agent2)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+
+ExecStartPre=-/usr/bin/podman rm -f zabbix-agent
+ExecStartPre=/usr/bin/podman pull quay.io/crunchtools/zabbix-agent2:latest
+
+ExecStart=/usr/bin/podman run \
+    --name zabbix-agent \
+    --network=host \
+    --pid=host \
+    --privileged \
+    -v /srv/zabbix-agent/config/lotor.conf:/etc/zabbix/zabbix_agent2.d/lotor.conf:ro,Z \
+    -v /:/host/rootfs:ro \
+    -v /proc:/host/proc:ro \
+    -v /sys:/host/sys:ro \
+    -v /run/podman/podman.sock:/var/run/docker.sock:ro \
+    quay.io/crunchtools/zabbix-agent2:latest
+
+ExecStop=/usr/bin/podman stop -t 10 zabbix-agent
+
+[Install]
+WantedBy=multi-user.target
