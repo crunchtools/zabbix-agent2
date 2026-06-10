@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-  schedule:
-    # Rebuild weekly to pick up base image updates
-    - cron: '0 6 * * 1'
-
 env:
   IMAGE_NAME: crunchtools/zabbix-agent2
   CONTAINER_RUNTIME: docker
